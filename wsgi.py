@@ -16,6 +16,16 @@ def env():
     response_body = response_body.encode('utf-8')
     return response_body
 
+
+@route('/db')
+def db():
+    cnx = mysql.connector.connect(user=os.environ[OPENSHIFT_MYSQL_DB_USERNAME],
+                                  password=os.environ[OPENSHIFT_MYSQL_DB_PASSWORD],
+                                  host=os.environ[OPENSHIFT_MYSQL_DB_HOST],
+                                  database='biba')
+    return cnx
+
+
 application=default_app()
 #
 # Below for testing only
