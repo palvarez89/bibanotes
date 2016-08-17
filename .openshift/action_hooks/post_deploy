@@ -12,12 +12,14 @@ def createDatabase():
     except BaseException as e:
         print(e)
     cur = con.cursor()
-    cur.execute('CREATE DATABASE biba;')
-
-
-application=default_app()
-#
-# Below for testing only
-#
+    try:
+        cur.execute('CREATE DATABASE biba;')
+    except BaseException as e:
+        print(str(e))
+        if "database exists" in str(e):
+            print("DATABASE biba already present")
+            pass
+        else:
+            raise e
 
 createDatabase()
