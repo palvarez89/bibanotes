@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 from bottle import route, default_app
-import mysqlclient as mysql
+import MySQLdb as mysql
 
 #app = bottle.Bottle()
 
@@ -20,11 +20,15 @@ def env():
 
 @route('/db')
 def db():
-    cnx = mysql.connector.connect(user=os.environ[OPENSHIFT_MYSQL_DB_USERNAME],
-                                  password=os.environ[OPENSHIFT_MYSQL_DB_PASSWORD],
-                                  host=os.environ[OPENSHIFT_MYSQL_DB_HOST],
-                                  database='biba')
-    return cnx
+    try:
+        cnx = mysql.connect(user=os.environ["OPENSHIFT_MYSQL_DB_USERNAME"],
+                            passwd=os.environ["OPENSHIFT_MYSQL_DB_PASSWORD"],
+                            host=os.environ["OPENSHIFT_MYSQL_DB_HOST"],
+                            port=int(os.environ["OPENSHIFT_MYSQL_DB_PORT"]),
+                            db='biba')
+    except BaseException as e:
+        print(e)
+    return "ok"
 
 
 application=default_app()

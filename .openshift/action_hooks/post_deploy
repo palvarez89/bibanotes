@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+import os
+from bottle import route, default_app
+import MySQLdb as mysql
+
+def createDatabase():
+    try:
+        con= mysql.connect(user=os.environ["OPENSHIFT_MYSQL_DB_USERNAME"],
+                            passwd=os.environ["OPENSHIFT_MYSQL_DB_PASSWORD"],
+                            host=os.environ["OPENSHIFT_MYSQL_DB_HOST"],
+                            port=int(os.environ["OPENSHIFT_MYSQL_DB_PORT"]))
+    except BaseException as e:
+        print(e)
+    cur = con.cursor()
+    cur.execute('CREATE DATABASE biba;')
+
+
+application=default_app()
+#
+# Below for testing only
+#
+
+createDatabase()
