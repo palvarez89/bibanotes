@@ -3,23 +3,90 @@ import os
 from bottle import route, default_app
 import MySQLdb as mysql
 
-def createDatabase():
+
+database = "biba"
+def createDatabase(db_name):
     try:
-        con= mysql.connect(user=os.environ["OPENSHIFT_MYSQL_DB_USERNAME"],
+        con = mysql.connect(user=os.environ["OPENSHIFT_MYSQL_DB_USERNAME"],
                             passwd=os.environ["OPENSHIFT_MYSQL_DB_PASSWORD"],
                             host=os.environ["OPENSHIFT_MYSQL_DB_HOST"],
                             port=int(os.environ["OPENSHIFT_MYSQL_DB_PORT"]))
     except BaseException as e:
         print(e)
+        raise
     cur = con.cursor()
     try:
-        cur.execute('CREATE DATABASE biba;')
+        cur.execute('CREATE DATABASE %s;' % (db_name))
     except BaseException as e:
-        print(str(e))
         if "database exists" in str(e):
-            print("DATABASE biba already present")
+            print("DATABASE %s already present" %(db_name))
             pass
         else:
             raise e
 
-createDatabase()
+def createTables(db_name):
+    try:
+        con = mysql.connect(user=os.environ["OPENSHIFT_MYSQL_DB_USERNAME"],
+                            passwd=os.environ["OPENSHIFT_MYSQL_DB_PASSWORD"],
+                            host=os.environ["OPENSHIFT_MYSQL_DB_HOST"],
+                            port=int(os.environ["OPENSHIFT_MYSQL_DB_PORT"]),
+                            db=db_name)
+    except BaseException as e:
+        print(e)
+        raise
+    cur = con.cursor()
+    try:
+        cur.execute('CREATE DATABASE %s;' % (db_name))
+    except BaseException as e:
+        print(e)
+        raise
+    print("CREATE TABLE IF NOT EXISTS ")
+
+from sqlalchemy import Column, DateTime, String, Integer, ForeignKey, func
+from sqlalchemy.orm import relationship, backref
+from sqlalchemy.ext.declarative import declarative_base
+ 
+ 
+Base = declarative_base()
+ 
+ 
+class Department(Base):
+    __tablename__ = 'department'
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+ 
+ 
+class Employee(Base):
+    __tablename__ = 'employee'
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    # Use default=func.now() to set the default hiring time
+    # of an Employee to be the current time when an
+    # Employee record was created
+    hired_on = Column(DateTime, default=func.now())
+    department_id = Column(Integer, ForeignKey('department.id'))
+    # Use cascade='delete,all' to propagate the deletion of a Department onto its Employees
+    department = relationship(
+        Department,
+        backref=backref('employees',
+                         uselist=True,
+                         cascade='delete,all'))
+ 
+def createTables2(db_name):
+    connection_string = "mysql+pymysql://%s:%s@%s:%s/%s" % (os.environ["OPENSHIFT_MYSQL_DB_USERNAME"],
+                                                            os.environ["OPENSHIFT_MYSQL_DB_PASSWORD"],
+                                                            os.environ["OPENSHIFT_MYSQL_DB_HOST"],
+                                                            os.environ["OPENSHIFT_MYSQL_DB_PORT"],
+                                                            db_name)
+
+    from sqlalchemy import create_engine
+    engine = create_engine(connection_string)
+     
+    from sqlalchemy.orm import sessionmaker
+    session = sessionmaker()
+    session.configure(bind=engine)
+    Base.metadata.create_all(engine)
+
+
+createDatabase(database)
+createTables2(database)
