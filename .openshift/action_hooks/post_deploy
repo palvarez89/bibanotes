@@ -3,7 +3,6 @@ import os
 from bottle import route, default_app
 import MySQLdb as mysql
 
-
 database = "biba"
 def createDatabase(db_name):
     try:
@@ -50,25 +49,23 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
  
  
-class Department(Base):
-    __tablename__ = 'department'
+class Estacion(Base):
+    __tablename__ = 'estacion'
     id = Column(Integer, primary_key=True)
-    name = Column(String)
  
  
-class Employee(Base):
-    __tablename__ = 'employee'
+class Comentario(Base):
+    __tablename__ = 'comentario'
     id = Column(Integer, primary_key=True)
-    name = Column(String)
-    # Use default=func.now() to set the default hiring time
-    # of an Employee to be the current time when an
-    # Employee record was created
-    hired_on = Column(DateTime, default=func.now())
-    department_id = Column(Integer, ForeignKey('department.id'))
+    comentario = Column(String(140))
+    # Use default=func.now() to set the default written time
+    # of a Comentario to be the current time.
+    escrito_en = Column(DateTime, default=func.now())
+    estacion_id = Column(Integer, ForeignKey('estacion.id'))
     # Use cascade='delete,all' to propagate the deletion of a Department onto its Employees
-    department = relationship(
-        Department,
-        backref=backref('employees',
+    estacion = relationship(
+        Estacion,
+        backref=backref('comentario',
                          uselist=True,
                          cascade='delete,all'))
  
