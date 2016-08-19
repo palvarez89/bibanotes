@@ -23,24 +23,6 @@ def createDatabase(db_name):
         else:
             raise e
 
-def createTables(db_name):
-    try:
-        con = mysql.connect(user=os.environ["OPENSHIFT_MYSQL_DB_USERNAME"],
-                            passwd=os.environ["OPENSHIFT_MYSQL_DB_PASSWORD"],
-                            host=os.environ["OPENSHIFT_MYSQL_DB_HOST"],
-                            port=int(os.environ["OPENSHIFT_MYSQL_DB_PORT"]),
-                            db=db_name)
-    except BaseException as e:
-        print(e)
-        raise
-    cur = con.cursor()
-    try:
-        cur.execute('CREATE DATABASE %s;' % (db_name))
-    except BaseException as e:
-        print(e)
-        raise
-    print("CREATE TABLE IF NOT EXISTS ")
-
 from sqlalchemy import Column, DateTime, String, Integer, ForeignKey, func
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
@@ -69,7 +51,7 @@ class Comentario(Base):
                          uselist=True,
                          cascade='delete,all'))
  
-def createTables2(db_name):
+def createTables(db_name):
     connection_string = "mysql+pymysql://%s:%s@%s:%s/%s" % (os.environ["OPENSHIFT_MYSQL_DB_USERNAME"],
                                                             os.environ["OPENSHIFT_MYSQL_DB_PASSWORD"],
                                                             os.environ["OPENSHIFT_MYSQL_DB_HOST"],
@@ -86,4 +68,4 @@ def createTables2(db_name):
 
 
 createDatabase(database)
-createTables2(database)
+createTables(database)

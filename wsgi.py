@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import os
-from bottle import route, default_app
+from bottle import route, default_app, request, abort
 import MySQLdb as mysql
+import json
 
 #app = bottle.Bottle()
 
@@ -30,6 +31,36 @@ def db():
         print(e)
     return "ok"
 
+
+@route('/add_comment/:id', method='PUT')
+def add_comment(id):
+    print("adding comments %s" % id)
+    #data = request.body.readline().decode('utf-8')
+    data = request.json
+    print(data)
+    print("grrrreat")
+    if not data:
+        abort(400, 'No data received')
+    if not 'comment' in data:
+        abort(400, 'No comment included')
+    try:
+        db['documents'].save(entity)
+    except ValidationError as ve:
+        abort(400, str(ve))
+
+@route('/list_comments/:id', method='GET')
+def list_comments(id):
+    return "listing comments %s" % id
+    data = request.body.readline()
+    if not data:
+        abort(400, 'No data received')
+    entity = json.loads(data)
+    if not entity.has_key('_id'):
+        abort(400, 'No _id specified')
+    try:
+        db['documents'].save(entity)
+    except ValidationError as ve:
+        abort(400, str(ve))
 
 application=default_app()
 #
