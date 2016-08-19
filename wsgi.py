@@ -3,8 +3,17 @@ import os
 from bottle import route, default_app, request, abort
 import MySQLdb as mysql
 import json
+import models
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
+database = 'biba'
 #app = bottle.Bottle()
+connection_string = "mysql+pymysql://%s:%s@%s:%s/%s" % (os.environ["OPENSHIFT_MYSQL_DB_USERNAME"],
+                                                        os.environ["OPENSHIFT_MYSQL_DB_PASSWORD"],
+                                                        os.environ["OPENSHIFT_MYSQL_DB_HOST"],
+                                                        os.environ["OPENSHIFT_MYSQL_DB_PORT"],
+                                                        database)
 
 @route('/')
 def index():
@@ -44,9 +53,20 @@ def add_comment(id):
     if not 'comment' in data:
         abort(400, 'No comment included')
     try:
-        db['documents'].save(entity)
+        comment = data['comment']
+        engine = create_engine(connection_string)
+        Session = sessionmaker(bind=engine)
+        session = Session()
+
+        estacion = models.Estacion(id=id)
+        comentario = models.Comentario(estacion_id=id, comentario=comment)
+        session.add(estacion)
+        session.add(comentario)
+        session.commit()
     except ValidationError as ve:
         abort(400, str(ve))
+
+
 
 @route('/list_comments/:id', method='GET')
 def list_comments(id):

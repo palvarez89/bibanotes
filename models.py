@@ -11,6 +11,8 @@ Base = declarative_base()
 class Estacion(Base):
     __tablename__ = 'estacion'
     id = Column(Integer, primary_key=True)
+    def __init__(self, id):
+        self.id = id
 
 
 class Comentario(Base):
@@ -28,3 +30,6 @@ class Comentario(Base):
                          uselist=True,
                          cascade='delete,all'))
 
+    def __init__(self, estacion_id, comentario):
+        self.estacion_id = estacion_id
+        self.conetario = comentario
