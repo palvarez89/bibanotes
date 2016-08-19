@@ -37,7 +37,7 @@ def createTables(db_name):
     from sqlalchemy.orm import sessionmaker
     session = sessionmaker()
     session.configure(bind=engine)
-    Base.metadata.create_all(engine)
+    models.Base.metadata.create_all(engine)
 
 
 createDatabase(database)
