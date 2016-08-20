@@ -7,6 +7,9 @@ from models import Comentario, Estacion
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+import bottle
+bottle.TEMPLATE_PATH.insert(0,os.environ['OPENSHIFT_REPO_DIR'])
+
 database = 'biba'
 #app = bottle.Bottle()
 connection_string = "mysql+pymysql://%s:%s@%s:%s/%s" % (os.environ["OPENSHIFT_MYSQL_DB_USERNAME"],
