@@ -42,10 +42,10 @@ def env():
     return response_body
 
 
-#/archive_comment/id
+#/archive-comment/id
 
 
-@route('/add_comment/:id', method='PUT')
+@route('/add-comment/:id', method='PUT')
 def add_comment(id):
     ''' Adds a comment to a given Estacion:
 
@@ -53,7 +53,7 @@ def add_comment(id):
 
             curl -H 'Content-Type: application/json' -X PUT \
               -d '{"comment":"Estacion esta rota"}' \
-              localhost:8051/add_comment/2
+              localhost:8051/add-comment/2
     '''
 
     def get_or_create(session, model, **kwargs):
@@ -91,13 +91,13 @@ def add_comment(id):
 
 
 
-@route('/list_comments/:id', method='GET')
+@route('/list-comments/:id', method='GET')
 def list_comments(id):
     ''' Lists all comments of a Estacion:
 
         Example with curl:
 
-            curl  localhost:8051/list_comments/2
+            curl  localhost:8051/list-comments/2
     '''
 
     print("listing number %s" % id)
