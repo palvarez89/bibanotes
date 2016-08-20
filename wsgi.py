@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import os
-from bottle import route, default_app, request, abort
+from bottle import route, default_app, request, abort, app, template
 import MySQLdb as mysql
 import json
 from models import Comentario, Estacion
@@ -14,15 +14,17 @@ connection_string = "mysql+pymysql://%s:%s@%s:%s/%s" % (os.environ["OPENSHIFT_MY
                                                         os.environ["OPENSHIFT_MYSQL_DB_HOST"],
                                                         os.environ["OPENSHIFT_MYSQL_DB_PORT"],
                                                         database)
-def get_or_create(session, model, **kwargs):
-    instance = session.query(model).filter_by(**kwargs).first()
-    if instance:
-        return instance
-    else:
-        instance = model(**kwargs)
-        session.add(instance)
-        session.commit()
-        return instance
+
+
+from itertools import cycle
+docs_exclude = "/api-doc","/api-map"
+
+@route('/api-doc',method=['GET'])
+def api_doc():
+    ''' Prints HTML docs of the API
+    '''
+    colors = cycle('#FFFFFF #CCCFDF'.split())
+    return template("bottle0_template",colors=colors,routes=app[0].routes)
 
 @route('/')
 def index():
@@ -37,23 +39,30 @@ def env():
     return response_body
 
 
-@route('/db')
-def db():
-    try:
-        cnx = mysql.connect(user=os.environ["OPENSHIFT_MYSQL_DB_USERNAME"],
-                            passwd=os.environ["OPENSHIFT_MYSQL_DB_PASSWORD"],
-                            host=os.environ["OPENSHIFT_MYSQL_DB_HOST"],
-                            port=int(os.environ["OPENSHIFT_MYSQL_DB_PORT"]),
-                            db='biba')
-    except BaseException as e:
-        print(e)
-    return "ok"
-
-#/delete_comment/id
+#/archive_comment/id
 
 
 @route('/add_comment/:id', method='PUT')
 def add_comment(id):
+    ''' Adds a comment to a given Estacion:
+
+        Example with curl:
+
+            curl -H 'Content-Type: application/json' -X PUT \
+              -d '{"comment":"Estacion esta rota"}' \
+              localhost:8051/add_comment/2
+    '''
+
+    def get_or_create(session, model, **kwargs):
+        instance = session.query(model).filter_by(**kwargs).first()
+        if instance:
+            return instance
+        else:
+            instance = model(**kwargs)
+            session.add(instance)
+            session.commit()
+            return instance
+
     print("adding comments %s" % id)
     #data = request.body.readline().decode('utf-8')
     data = request.json
@@ -81,6 +90,13 @@ def add_comment(id):
 
 @route('/list_comments/:id', method='GET')
 def list_comments(id):
+    ''' Lists all comments of a Estacion:
+
+        Example with curl:
+
+            curl  localhost:8051/list_comments/2
+    '''
+
     print("listing number %s" % id)
     try:
         engine = create_engine(connection_string)
