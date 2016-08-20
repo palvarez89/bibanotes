@@ -3,7 +3,7 @@ import os
 from bottle import route, default_app, request, abort
 import MySQLdb as mysql
 import json
-import models
+from models import Comentario, Estacion
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -14,6 +14,15 @@ connection_string = "mysql+pymysql://%s:%s@%s:%s/%s" % (os.environ["OPENSHIFT_MY
                                                         os.environ["OPENSHIFT_MYSQL_DB_HOST"],
                                                         os.environ["OPENSHIFT_MYSQL_DB_PORT"],
                                                         database)
+def get_or_create(session, model, **kwargs):
+    instance = session.query(model).filter_by(**kwargs).first()
+    if instance:
+        return instance
+    else:
+        instance = model(**kwargs)
+        session.add(instance)
+        session.commit()
+        return instance
 
 @route('/')
 def index():
@@ -40,6 +49,8 @@ def db():
         print(e)
     return "ok"
 
+#/delete_comment/id
+
 
 @route('/add_comment/:id', method='PUT')
 def add_comment(id):
@@ -47,7 +58,6 @@ def add_comment(id):
     #data = request.body.readline().decode('utf-8')
     data = request.json
     print(data)
-    print("grrrreat")
     if not data:
         abort(400, 'No data received')
     if not 'comment' in data:
@@ -58,29 +68,35 @@ def add_comment(id):
         Session = sessionmaker(bind=engine)
         session = Session()
 
-        estacion = models.Estacion(id=id)
-        comentario = models.Comentario(estacion_id=id, comentario=comment)
+        estacion = get_or_create(session, Estacion, id=id)
+
+        comentario = Comentario(estacion_id=id, comentario=comment)
         session.add(estacion)
         session.add(comentario)
         session.commit()
-    except ValidationError as ve:
-        abort(400, str(ve))
+    except BaseException as e:
+        abort(400, str(e))
 
 
 
 @route('/list_comments/:id', method='GET')
 def list_comments(id):
-    return "listing comments %s" % id
-    data = request.body.readline()
-    if not data:
-        abort(400, 'No data received')
-    entity = json.loads(data)
-    if not entity.has_key('_id'):
-        abort(400, 'No _id specified')
+    print("listing number %s" % id)
     try:
-        db['documents'].save(entity)
-    except ValidationError as ve:
-        abort(400, str(ve))
+        engine = create_engine(connection_string)
+        Session = sessionmaker(bind=engine)
+        session = Session()
+    except BaseException as e:
+        abort(400, str(e))
+        raise e
+    try:
+        comments = session.query(Comentario).filter(Comentario.estacion_id == id)
+        for instance in comments:
+            print(instance.as_dict())
+        return json.dumps([r.as_dict() for r in comments])
+    except BaseException as e:
+        abort(400, str(e))
+        raise e
 
 application=default_app()
 #

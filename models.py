@@ -32,4 +32,15 @@ class Comentario(Base):
 
     def __init__(self, estacion_id, comentario):
         self.estacion_id = estacion_id
-        self.conetario = comentario
+        self.comentario = comentario
+
+    def __str__(self):
+        return "%s, %s" % (self.estacion_id, self.comentario)
+
+    def as_dict(self):
+        d = {}
+        d['id']=self.id
+        d['comentario']=self.comentario
+        d['escrito_en']=self.escrito_en.isoformat()
+        d['estacion_id']=self.estacion_id
+        return d
