@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from sqlalchemy import Column, DateTime, String, Integer, ForeignKey, func
+from sqlalchemy import Boolean, Column, DateTime, String, Integer, ForeignKey, func
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -19,6 +19,7 @@ class Comentario(Base):
     __tablename__ = 'comentario'
     id = Column(Integer, primary_key=True)
     comentario = Column(String(140))
+    archivado = Column(Boolean, default=False)
     # Use default=func.now() to set the default written time
     # of a Comentario to be the current time.
     escrito_en = Column(DateTime, default=func.now())

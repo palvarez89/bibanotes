@@ -11,7 +11,7 @@ import bottle
 bottle.TEMPLATE_PATH.insert(0,os.environ['OPENSHIFT_REPO_DIR'])
 
 database = 'biba'
-#app = bottle.Bottle()
+
 connection_string = "mysql+pymysql://%s:%s@%s:%s/%s" % (os.environ["OPENSHIFT_MYSQL_DB_USERNAME"],
                                                         os.environ["OPENSHIFT_MYSQL_DB_PASSWORD"],
                                                         os.environ["OPENSHIFT_MYSQL_DB_HOST"],
@@ -43,11 +43,34 @@ def env():
 
 
 #/archive-comment/id
+@route('/archive-comment/:id', method='GET')
+def archive_comment(id):
+    ''' Marks a comment as archived.
 
+        Example with curl:
+
+            curl  localhost:8051/archive-comment/4
+    '''
+
+    print("listing number %s" % id)
+    try:
+        engine = create_engine(connection_string)
+        Session = sessionmaker(bind=engine)
+        session = Session()
+    except BaseException as e:
+        abort(400, str(e))
+        raise e
+    try:
+        comment = session.query(Comentario).filter(Comentario.id == id).first()
+        comment.archivado = True
+        session.commit()
+    except BaseException as e:
+        abort(400, str(e))
+        raise e
 
 @route('/add-comment/:id', method='PUT')
 def add_comment(id):
-    ''' Adds a comment to a given Estacion:
+    ''' Adds a comment to a given Estacion.
 
         Example with curl:
 
@@ -67,7 +90,6 @@ def add_comment(id):
             return instance
 
     print("adding comments %s" % id)
-    #data = request.body.readline().decode('utf-8')
     data = request.json
     print(data)
     if not data:
