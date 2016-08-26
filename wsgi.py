@@ -134,7 +134,8 @@ def list_comments(id):
         comments = session.query(Comentario).filter(Comentario.estacion_id == id)
         for instance in comments:
             print(instance.as_dict())
-        return { "comments": [r.as_dict() for r in comments], "station": id }
+        res = [r.as_dict() for r in comments]
+        return res
     except BaseException as e:
         abort(400, str(e))
         raise e
