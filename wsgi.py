@@ -135,7 +135,7 @@ def list_comments(id):
         for instance in comments:
             print(instance.as_dict())
         response.content_type = 'application/json'
-        return [r.as_dict() for r in comments]
+        return { "comments": [r.as_dict() for r in comments], "station": id }
     except BaseException as e:
         abort(400, str(e))
         raise e
