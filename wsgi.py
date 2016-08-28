@@ -132,8 +132,6 @@ def list_comments(id):
         raise e
     try:
         comments = session.query(Comentario).filter(Comentario.estacion_id == id)
-        for instance in comments:
-            print(instance.as_dict())
         res = [r.as_dict() for r in comments]
         response.content_type = 'application/json'
         return json.dumps(res)
