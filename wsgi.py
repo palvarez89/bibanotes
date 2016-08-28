@@ -4,7 +4,7 @@ from bottle import route, default_app, request, abort, app, template, response
 import MySQLdb as mysql
 import json
 from models import Comentario, Estacion
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 
 import bottle
@@ -131,7 +131,7 @@ def list_comments(id):
         abort(400, str(e))
         raise e
     try:
-        comments = session.query(Comentario).filter(Comentario.estacion_id == id).filter(Comentario.archivado == False)
+        comments = session.query(Comentario).order_by(desc(Comentario.escrito_en)).filter(Comentario.estacion_id == id).filter(Comentario.archivado == False)
         res = [r.as_dict() for r in comments]
         response.content_type = 'application/json'
         return json.dumps(res)
