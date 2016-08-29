@@ -67,6 +67,7 @@ def archive_comment(id):
     except BaseException as e:
         abort(400, str(e))
         raise e
+    return "OK"
 
 @route('/add-comment/:id', method='PUT')
 def add_comment(id):
