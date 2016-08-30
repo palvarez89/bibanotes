@@ -6,6 +6,7 @@ import json
 from models import Comentario, Estacion
 from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import NullPool
 
 import bottle
 bottle.TEMPLATE_PATH.insert(0,os.environ['OPENSHIFT_REPO_DIR'])
@@ -54,7 +55,7 @@ def archive_comment(id):
 
     print("listing number %s" % id)
     try:
-        engine = create_engine(connection_string)
+        engine = create_engine(connection_string, poolclass=NullPool)
         Session = sessionmaker(bind=engine)
         session = Session()
     except BaseException as e:
@@ -101,7 +102,7 @@ def add_comment(id):
         abort(400, 'No comment included')
     try:
         comment = data['comment']
-        engine = create_engine(connection_string)
+        engine = create_engine(connection_string, poolclass=NullPool)
         Session = sessionmaker(bind=engine)
         session = Session()
 
@@ -129,7 +130,7 @@ def list_comments(id):
 
     print("listing number %s" % id)
     try:
-        engine = create_engine(connection_string)
+        engine = create_engine(connection_string, poolclass=NullPool)
         Session = sessionmaker(bind=engine)
         session = Session()
     except BaseException as e:
