@@ -59,6 +59,7 @@ def archive_comment(id):
         session = Session()
     except BaseException as e:
         abort(400, str(e))
+        engine.dispose()
         raise e
     try:
         comment = session.query(Comentario).filter(Comentario.id == id).first()
@@ -66,7 +67,9 @@ def archive_comment(id):
         session.commit()
     except BaseException as e:
         abort(400, str(e))
+        engine.dispose()
         raise e
+    engine.dispose()
 
 @route('/add-comment/:id', method='PUT')
 def add_comment(id):
@@ -109,7 +112,9 @@ def add_comment(id):
         session.add(comentario)
         session.commit()
     except BaseException as e:
+        engine.dispose()
         abort(400, str(e))
+    engine.dispose()
 
 
 
@@ -129,14 +134,17 @@ def list_comments(id):
         session = Session()
     except BaseException as e:
         abort(400, str(e))
+        engine.dispose()
         raise e
     try:
         comments = session.query(Comentario).order_by(desc(Comentario.escrito_en)).filter(Comentario.estacion_id == id).filter(Comentario.archivado == False)
         res = [r.as_dict() for r in comments]
         response.content_type = 'application/json'
+        engine.dispose()
         return json.dumps(res)
     except BaseException as e:
         abort(400, str(e))
+        engine.dispose()
         raise e
 
 application=default_app()
