@@ -44,7 +44,7 @@ class Estacion(Base):
 class Comentario(Base):
     __tablename__ = 'comentario'
     id = Column(Integer, primary_key=True)
-    comentario = Column(String(140))
+    comentario = Column(String(1000))
     archivado = Column(Boolean, default=False)
     # Use default=func.now() to set the default written time
     # of a Comentario to be the current time.
