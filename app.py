@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import os
 from bottle import route, default_app, request, abort, app, template, response
-import MySQLdb as mysql
 import json
 from models import Comentario, Estacion
 from sqlalchemy import create_engine, desc
@@ -13,12 +12,11 @@ bottle.TEMPLATE_PATH.insert(0,os.environ['OPENSHIFT_REPO_DIR'])
 
 database = 'biba'
 
-connection_string = "mysql+pymysql://%s:%s@%s:%s/%s" % (os.environ["OPENSHIFT_MYSQL_DB_USERNAME"],
-                                                        os.environ["OPENSHIFT_MYSQL_DB_PASSWORD"],
-                                                        os.environ["OPENSHIFT_MYSQL_DB_HOST"],
-                                                        os.environ["OPENSHIFT_MYSQL_DB_PORT"],
-                                                        database)
-
+connection_string = "postgresql+psycopg2://%s:%s@%s:%s/%s" % (os.environ["DATABASE_USER"],
+                                                              os.environ["DATABASE_PASSWORD"],
+                                                              "127.0.0.1",
+                                                              "5432",
+                                                              database)
 
 from itertools import cycle
 docs_exclude = "/api-doc","/api-map"
@@ -152,4 +150,4 @@ application=default_app()
 
 if __name__ == '__main__':
     from bottle import run
-    run(host='localhost', port=8051)
+    run(host='localhost', port=8080)

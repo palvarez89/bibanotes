@@ -1,5 +1,4 @@
 bottle
-mysqlclient
-pymysql
 pytz
 sqlalchemy
+psycopg2
