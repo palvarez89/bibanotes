@@ -2,14 +2,14 @@
 import os
 from bottle import route, default_app
 import models
+import psycopg2
+
 
 database = "biba"
 def createDatabase(db_name):
     try:
-        con = mysql.connect(user=os.environ["OPENSHIFT_MYSQL_DB_USERNAME"],
-                            passwd=os.environ["OPENSHIFT_MYSQL_DB_PASSWORD"],
-                            host=os.environ["OPENSHIFT_MYSQL_DB_HOST"],
-                            port=int(os.environ["OPENSHIFT_MYSQL_DB_PORT"]))
+        DATABASE_URL = os.environ['DATABASE_URL']
+        con = psycopg2.connect(DATABASE_URL, sslmode='require')
     except BaseException as e:
         print(e)
         raise
@@ -24,15 +24,16 @@ def createDatabase(db_name):
             raise e
 
 def createTables(db_name):
-    connection_string = "postgresql+psycopg2://%s:%s@%s:%s/%s" % ('postgres',
-                                                                  'password',
-                                                                  os.environ["DATABASE_URL"],
-                                                                  "127.0.0.1",
-                                                                  "5432",
-                                                                  db_name)
+    #connection_string = "postgresql+psycopg2://%s:%s@%s:%s/%s" % ('postgres',
+    #                                                              'password',
+    #                                                              os.environ["DATABASE_URL"],
+    #                                                              "127.0.0.1",
+    #                                                              "5432",
+    #                                                              db_name)
+    DATABASE_URL = os.environ['DATABASE_URL']
 
     from sqlalchemy import create_engine
-    engine = create_engine(connection_string)
+    engine = create_engine(DATABASE_URL)
      
     from sqlalchemy.orm import sessionmaker
     session = sessionmaker()
