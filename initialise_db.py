@@ -3,6 +3,7 @@ import os
 from bottle import route, default_app
 import models
 import psycopg2
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 
 database = "biba"
@@ -13,6 +14,7 @@ def createDatabase(db_name):
     except BaseException as e:
         print(e)
         raise
+    con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
     cur = con.cursor()
     try:
         cur.execute('CREATE DATABASE %s;' % (db_name))
