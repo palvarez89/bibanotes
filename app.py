@@ -8,12 +8,13 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 
 import bottle
-bottle.TEMPLATE_PATH.insert(0,os.environ['OPENSHIFT_REPO_DIR'])
+bottle.TEMPLATE_PATH.insert(0,'.')
 
 database = 'biba'
 
-connection_string = "postgresql+psycopg2://%s:%s@%s:%s/%s" % (os.environ["DATABASE_USER"],
-                                                              os.environ["DATABASE_PASSWORD"],
+connection_string = "postgresql+psycopg2://%s:%s@%s:%s/%s" % ('postgres',
+                                                              'password',
+                                                              os.environ["DATABASE_URL"],
                                                               "127.0.0.1",
                                                               "5432",
                                                               database)
