@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import os
-from bottle import route, default_app, request, abort, app, template, response
+from bottle import route, default_app, request, abort, app, template, response, run
 import json
 from models import Comentario, Estacion
 from sqlalchemy import create_engine, desc
@@ -144,6 +144,7 @@ def list_comments(id):
 
 application=default_app()
 
-if __name__ == '__main__':
-    from bottle import run
-    run(host='localhost', port=8080)
+if os.environ.get('APP_LOCATION') == 'heroku':
+    run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+else:
+    run(host='localhost', port=8080, debug=True)
