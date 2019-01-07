@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import os
 from bottle import route, default_app
-import MySQLdb as mysql
 import models
 
 database = "biba"
@@ -25,11 +24,12 @@ def createDatabase(db_name):
             raise e
 
 def createTables(db_name):
-    connection_string = "mysql+pymysql://%s:%s@%s:%s/%s" % (os.environ["OPENSHIFT_MYSQL_DB_USERNAME"],
-                                                            os.environ["OPENSHIFT_MYSQL_DB_PASSWORD"],
-                                                            os.environ["OPENSHIFT_MYSQL_DB_HOST"],
-                                                            os.environ["OPENSHIFT_MYSQL_DB_PORT"],
-                                                            db_name)
+    connection_string = "postgresql+psycopg2://%s:%s@%s:%s/%s" % ('postgres',
+                                                                  'password',
+                                                                  os.environ["DATABASE_URL"],
+                                                                  "127.0.0.1",
+                                                                  "5432",
+                                                                  db_name)
 
     from sqlalchemy import create_engine
     engine = create_engine(connection_string)
