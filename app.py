@@ -12,12 +12,7 @@ bottle.TEMPLATE_PATH.insert(0,'.')
 
 database = 'biba'
 
-connection_string = "postgresql+psycopg2://%s:%s@%s:%s/%s" % ('postgres',
-                                                              'password',
-                                                              os.environ["DATABASE_URL"],
-                                                              "127.0.0.1",
-                                                              "5432",
-                                                              database)
+connection_string = os.environ["DATABASE_URL"]
 
 from itertools import cycle
 docs_exclude = "/api-doc","/api-map"
