@@ -28,15 +28,6 @@ def api_doc():
 def index():
     return '<strong>Hello World!</strong>'
 
-@route('/env')
-def env():
-    response_body = ['%s: %s' % (key, value)
-                for key, value in sorted(os.environ.items())]
-    response_body = '\n'.join(response_body)
-    response_body = response_body.encode('utf-8')
-    return response_body
-
-
 #/archive-comment/id
 @route('/archive-comment/:id', method='DELETE')
 def archive_comment(id):
