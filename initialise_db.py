@@ -43,5 +43,4 @@ def createTables(db_name):
     models.Base.metadata.create_all(engine)
 
 
-createDatabase(database)
 createTables(database)
