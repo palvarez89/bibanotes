@@ -7,6 +7,8 @@ from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 
+import scrapping
+
 import bottle
 bottle.TEMPLATE_PATH.insert(0,'.')
 
@@ -130,6 +132,16 @@ def list_comments(id):
         return json.dumps(res)
     except BaseException as e:
         abort(400, str(e))
+        session.close()
+        raise e
+
+@route('/get-estaciones', method='GET')
+def get_estaciones():
+    try:
+        estaciones = scrapping.get_estaciones()
+        return json.dumps(estaciones)
+    except BaseException as e:
+        abort(500, str(e))
         session.close()
         raise e
 
