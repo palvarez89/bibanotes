@@ -26,12 +26,18 @@ print(len(tables))
 #    print(tables[i])
 
 print("deal with trs")
-for i in range(4, len(tables)):
-    if "APARCAMIENTO" in str(tables[i]):
-        #print(tables[i])
-        titulo = tables[i].findAll("td", {"class": "titulo"})
-        print(titulo)
-    else:
-        if "ESTADO" in str(tables[i]):
-            estado = tables[i].findAll('td', {'class': 'lat2'})
-            print(estado)
+#for i in range(4, len(tables)):
+#    if "APARCAMIENTO" in str(tables[i]):
+#        #print(tables[i])
+#        titulo = tables[i].findAll("td", {"class": "titulo"})
+#        print(titulo)
+#    else:
+#        if "ESTADO" in str(tables[i]):
+#            estado = tables[i].findAll('td', {'class': 'lat2'})
+#            print(estado)
+
+titulos = soup.findAll("td", {"class": "titulo"})[1:]
+estados = soup.findAll("td", {"class": "lat2"})
+for i in range(len(titulos)):
+    print(titulos[i].contents[0])
+    print(estados[i*2+1].contents[0])
