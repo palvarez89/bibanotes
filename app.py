@@ -139,6 +139,7 @@ def list_comments(id):
 def get_estaciones():
     try:
         estaciones = scrapping.get_estaciones()
+        response.content_type = 'application/json'
         return json.dumps(estaciones)
     except BaseException as e:
         abort(500, str(e))
